@@ -1,7 +1,8 @@
 import React from 'react'
 import { useNavigate } from "react-router-dom"
 import { makeStyles } from 'tss-react/mui';
-import { AppBar,MenuItem, Container, Toolbar, Typography, Select, createTheme, ThemeProvider } from '@mui/material';
+import { InputLabel, FormControl, AppBar, MenuItem, Container, Toolbar, Typography, Select, createTheme, ThemeProvider } from '@mui/material';
+import { CryptoState } from '../CryptoContext';
 
 const useStyles = makeStyles()((theme)=>{
     return{
@@ -26,6 +27,7 @@ const darkTheme = createTheme({
 const Header = () => {
     const { classes } = useStyles();
     const navigate = useNavigate();
+    const { currency, setCurrency } = CryptoState();
     return (
         <ThemeProvider theme={darkTheme}>
         <AppBar color="transparent" position='static'>
@@ -34,18 +36,19 @@ const Header = () => {
                     <Typography onClick={()=> navigate("/")} variant="h6" className={ classes.title }>
                         CoinSentinel
                     </Typography>
-                    <Select labelId="demo-simple-select-label"
-                        id="demo-simple-select"
-                        label="Age" 
-                        variant="outlined" 
-                        style={{
-                            width:100,
-                            height:40,
-                            marginRight:15
-                        }}>
-                    <MenuItem value={"USD"}>USD</MenuItem>
-                    <MenuItem value={"INR"}>INR</MenuItem>
-                    </Select>
+            
+                    <Select
+              variant="outlined"
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={currency}
+              label="INR"
+              style={{ width: 100, height: 40, marginLeft: 15,color:"white" }}
+              onChange={(e) => setCurrency(e.target.value)}
+              >
+              <MenuItem value={"USD"}>USD</MenuItem>
+              <MenuItem value={"INR"}>INR</MenuItem>
+            </Select>
                 </Toolbar>
             </Container>
         </AppBar>
