@@ -1,5 +1,6 @@
 import React from 'react'
 import { makeStyles } from 'tss-react/mui';
+import Carousel from './Carousel';
 import { Container, Typography} from '@mui/material';
 const useStyles = makeStyles()(()=>{
     return{
@@ -50,6 +51,7 @@ const Banner = () => {
                     Stay updated on the latest cryptocurrency prices with CoinSentinel
                     </Typography>
                 </div>
+                <Carousel />
             </Container>
         </div>
     )
