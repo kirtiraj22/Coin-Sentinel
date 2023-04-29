@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { CoinList } from '../config/api'
 import { CryptoState } from '../CryptoContext'
 import { useEffect } from 'react'
-import { Container, LinearProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, ThemeProvider, Typography, createTheme } from '@mui/material'
+import { Container, LinearProgress, Pagination, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, ThemeProvider, Typography, createTheme } from '@mui/material'
 import { useStyles, makeStyles } from 'tss-react/mui'
 import { useNavigate } from 'react-router-dom'
 import { numberWithCommas } from './Banner/Carousel'
@@ -16,6 +16,7 @@ const CoinsTable = () => {
     const [coins, setCoins] = useState([])
     const [loading, setLoading] = useState(false)
     const [search, setSearch] = useState("")
+    const [page, setPage] = useState(1)
     const {currency, symbol } = CryptoState();
 
     const fetchCoins = async () => {
@@ -126,7 +127,9 @@ const CoinsTable = () => {
                             </TableHead>
                             <TableBody>
                                         {
-                                            handleSearch().map((rows) => {
+                                            handleSearch()
+                                            .slice((page - 1) * 10, (page - 1 ) * 10 + 10)
+                                            .map((rows) => {
                                                 const profit = rows.price_change_percentage_24h > 0;
 
                                                 return (
@@ -158,6 +161,8 @@ const CoinsTable = () => {
                                                             style={{
                                                                 textTransform: "uppercase",
                                                                 fontSize: 22,
+                                                                color: "white",
+                                                                fontWeight:"bold"
                                                             }}
                                                             >
                                                             {rows.symbol}
@@ -205,7 +210,25 @@ const CoinsTable = () => {
                     )
                 }
             </TableContainer>
+            <Stack spacing={2}>
 
+                <Pagination
+                    count={(handleSearch()?.length / 10).toFixed(0)}
+                    variant='outlined'
+                    color='secondary'
+                    style={{
+                        padding: 20,
+                        width:"100%",
+                        display: "flex",
+                        justifyContent: "center",
+                        backgroundColor: "#eebc1d",
+                    }}
+                    onChange={(_, value) => {
+                        setPage(value);
+                        window.scroll(0, 450);
+                    }}
+                    />
+                    </Stack>
         </Container>
     </ThemeProvider>
   )
