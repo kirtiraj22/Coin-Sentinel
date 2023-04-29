@@ -5,6 +5,9 @@ import { CoinList } from '../config/api'
 import { CryptoState } from '../CryptoContext'
 import { useEffect } from 'react'
 import { Container, LinearProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, ThemeProvider, Typography, createTheme } from '@mui/material'
+import { useStyles, makeStyles } from 'tss-react/mui'
+import { useNavigate } from 'react-router-dom'
+import { numberWithCommas } from './Banner/Carousel'
 
 
 
@@ -13,7 +16,7 @@ const CoinsTable = () => {
     const [coins, setCoins] = useState([])
     const [loading, setLoading] = useState(false)
     const [search, setSearch] = useState("")
-    const {currency } = CryptoState();
+    const {currency, symbol } = CryptoState();
 
     const fetchCoins = async () => {
         setLoading(true);
@@ -22,6 +25,23 @@ const CoinsTable = () => {
         setLoading(false)
     }
 
+    const useStyles = makeStyles()(()=>{
+        return{
+            row:{
+                backgroundColor: "#16171a",
+                cursor: "pointer",
+                "&:hover": {
+                    backgroundColor: "#131111",
+                },
+                fontFamily: "Montserrat"
+            },
+        };
+    });
+    
+
+    // const { classes } = useStyles;
+    const classes = useStyles;
+    const navigate = useNavigate();
     console.log(coins);
 
     useEffect(() => {
@@ -38,8 +58,8 @@ const CoinsTable = () => {
     })
     const handleSearch = () => {
         return coins.filter((coins) => (
-            coin.name.toLowerCase().includes(search) || 
-            coin.symbol.toLowerCase().includes(search)
+            coins.name.toLowerCase().includes(search) || 
+            coins.symbol.toLowerCase().includes(search)
         ))
     }
 
@@ -81,32 +101,102 @@ const CoinsTable = () => {
                             <TableHead style={{backgroundColor: "#eebc1d"}}>
                                 <TableRow>
                                     {["Coin", "Price", "24h Change", "Market Cap"].map((head) => (
-                                        <TableCell style={{
-                                            color: "black",
-                                            fontWeight: '700',
-                                            fontFamily:"Montserrat"
+                                    //     <TableCell
+                                    //     style={{
+                                    //       color: "black",
+                                    //       fontWeight: "700",
+                                    //       fontFamily: "Montserrat",
+                                    //     }}
+                                    //     key={head}
+                                    //     align="right"
+                                    //   >
+                                        <TableCell
+                                        style={{
+                                          color: "black",
+                                          fontWeight: "700",
+                                          fontFamily: "Montserrat",
                                         }}
                                         key={head}
                                         align={head === "Coin" ? "" : "right"}
-                                        >
-                                            {head}
-                                        </TableCell>
+                                      >
+                                        {head}
+                                      </TableCell>
                                     ))}
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                         {
-                                            handleSearch().map(row => {
-                                                const profit = row.price_change_percentage_24h > 0;
+                                            handleSearch().map((rows) => {
+                                                const profit = rows.price_change_percentage_24h > 0;
 
                                                 return (
                                                     <TableRow
                                                         onClick={
-                                                            ()=>history.pushState(`/coins/${row.id}`)
+                                                            ()=>navigate(`/coins/${rows.id}`)
                                                         }
                                                         className={classes.row}
-                                                        key={row.name}
-                                                    ></TableRow>
+                                                        key={rows.name}
+                                                    >
+                                                         <TableCell
+                                                        component="th"
+                                                        scope="row"
+                                                        style={{
+                                                            display: "flex",
+                                                            gap: 15,
+                                                        }}
+                                                        >
+                                                        <img
+                                                            src={rows?.image}
+                                                            alt={rows.name}
+                                                            height="50"
+                                                            style={{ marginBottom: 10 }}
+                                                        />
+                                                        <div
+                                                            style={{ display: "flex", flexDirection: "column" }}
+                                                        >
+                                                            <span
+                                                            style={{
+                                                                textTransform: "uppercase",
+                                                                fontSize: 22,
+                                                            }}
+                                                            >
+                                                            {rows.symbol}
+                                                            </span>
+                                                            <span style={{ color: "darkgrey" }}>
+                                                            {rows.name}
+                                                            </span>
+                                                        </div>
+                                                        </TableCell>
+                                                        <TableCell align="right"
+                                                        style={{
+                                                            color: "white",
+                                                        }}>
+                                                        {symbol}{" "}
+                                                        {numberWithCommas(rows.current_price.toFixed(2))}
+                                                        </TableCell>
+                                                        <TableCell
+                                                        align="right"
+                                                        style={{
+                                                            color: profit > 0 ? "rgb(14, 203, 129)" : "red",
+                                                            fontWeight: 500,
+                                                        }}
+                                                        >
+                                                        {profit && "+"}
+                                                        {rows.price_change_percentage_24h.toFixed(2)}%
+                                                        </TableCell>
+                                                        <TableCell 
+                                                        align="right"
+                                                        style={{
+                                                          color: "white",
+                                                        }}
+                                                        >
+                                                        {symbol}{" "}
+                                                        {numberWithCommas(
+                                                            rows.market_cap.toString().slice(0, -6)
+                                                        )}
+                                                        M
+                                                        </TableCell>
+                                                    </TableRow>
                                                 )
                                             })
                                         }
